@@ -10,23 +10,29 @@ from sklearn.decomposition import PCA , TruncatedSVD
 class preprocessor() :
 	"""class to read the dataset and clean it for for furthur processsing
 	"""
-	def __init__(self , DATASET_PATH = 'training.1600000.processed.noemoticon.csv') :
+	def __init__(self , DATASET_PATH = 'data/dataset_') :
 		"""constructor for the preprocessord class. It specifies the path to dataset
 
 		Parameters
 		----------
 		DATASET_PATH : str, optional
-			path to the dataset, by default 'training.1600000.processed.noemoticon.csv'
+			path to the dataset, by default 'data/dataset_' for all splitted files
 		"""
+		# If you want to use the single file i.e.DATASET_PATH = 'data/training.1600000.processed.noemoticon.csv'
+		# then self.df = self.read_dataset(DATASET_PATH, join_flag = False)
 		self.df = self.read_dataset(DATASET_PATH)			# setter for the dataset
 
-	def read_dataset(self , DATASET_PATH) :
+	def read_dataset(self , DATASET_PATH , join_flag = True , ext = '.csv') :
 		"""function to extract the dataset (dataframe) from the specified file path
 
 		Parameters
 		----------
 		DATASET_PATH : string
 			path to dataset
+		join_flag : boolean
+			flag to indicate whether to extract data from splited files or a single file
+		ext : string
+			extenstion of splitted files (only to be used when join_flag = True), by default '.csv.'
 
 		Returns
 		-------
@@ -34,7 +40,13 @@ class preprocessor() :
 			data extracted from file at specified path
 		"""
 		columns = [ 'target' , 'ID' , 'date' , 'flag' , 'user' , 'text' ]			# naming the columns
-		df = pd.read_csv(DATASET_PATH , encoding = "ISO-8859-1" , header= None , names = columns)
+		if(join_flag) :							# joining dataset
+			frames = []							# dataset was divided by 'split -C 20971520 -d training.1600000.processed.noemoticon.csv --additional-suffix=.csv dataset_' where 20971520 B = 20 MB
+			for i in range(12) :
+				frames.append(pd.read_csv(DATASET_PATH + str(i).zfill(2) + ext , encoding = "ISO-8859-1" , header=None , names=columns)) 
+			df = pd.concat(frames , ignore_index=True)
+		else :
+			df = pd.read_csv(DATASET_PATH , encoding = "ISO-8859-1" , header= None , names = columns)
 
 		df.loc[df['target'] == 4, 'target'] = 1                 # changing the target value from 4 to 1
 		return df												# returning dataset

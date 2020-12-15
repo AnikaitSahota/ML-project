@@ -23,3 +23,5 @@ class tree_classifiers():
         for clf in classifiers :
             print('------------'*4)
             self.fit_predict(clf)
+
+tree_classifiers().fun()
