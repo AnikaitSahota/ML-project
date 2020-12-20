@@ -7,6 +7,7 @@ from sklearn.decomposition import PCA , TruncatedSVD
 import joblib
 from sklearn.manifold import TSNE
 # import seaborn as sns
+import matplotlib.pyplot as plt
 
 class preprocessor() :
 	"""class to read the dataset and clean it for for furthur processsing
@@ -182,9 +183,11 @@ class EDA() :
 		y : Pandas dataframe
 			Dataframe of the label for every corresponding datapoint in X
 		"""
+		tsvd = TruncatedSVD(n_components= 10)
+		X = tsvd.fit(X).transform(X)
 		print('starting TSNE')
 		NNfeatures = TSNE(n_components = 2).fit_transform(X)
-		print('Ending TSNE')
+		print('ending TSNE')
 		self.__plot_cluster(NNfeatures , y , 'Scatter plot')
 
 	def __plot_cluster(self, X , y , title) :
@@ -197,11 +200,16 @@ class EDA() :
 		D1 = X[:,0]								# extracting the dimension one
 		D2 = X[:,1]								# extracting the dimension two
 		# print(D1.shape , D2.shape, y.shape)
-		plt.figure()
+		plt.figure('Scatter plot')
 		plt.xlabel('D0')
 		plt.ylabel('D1')
 		a = plt.scatter(D1 , D2 , c = y)			# ploting the scatter plot
 		plt.legend(*a.legend_elements(),loc = 'best')
 		plt.title(title)
-		plt.show()													# showing the plot
-		# plt.savefig('plot_images/'+title+'.png')
+		# plt.show()													# showing the plot
+		plt.savefig('../plot_images/'+title+'.png')
+	
+	# def basic_info(self , ) :
+		
+	# 	pass
+	# def 
