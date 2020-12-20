@@ -10,7 +10,7 @@ from sklearn.decomposition import PCA , TruncatedSVD
 class preprocessor() :
 	"""class to read the dataset and clean it for for furthur processsing
 	"""
-	def __init__(self , DATASET_PATH = 'data/dataset_') :
+	def __init__(self , DATASET_PATH = '../data/dataset_') :
 		"""constructor for the preprocessord class. It specifies the path to dataset
 
 		Parameters
@@ -93,7 +93,7 @@ class preprocessor() :
 		# return dim_red.transform(hot_coded)
 
 	def remove_pattern(self , text , pattern):
-		"""fucntion to clean the tweats for furtur processing.
+		"""function to clean the tweats for furtur processing.
 		Here we are removing the specified pattern from text
 
 		Parameters
