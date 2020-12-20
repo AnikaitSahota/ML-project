@@ -4,13 +4,14 @@ import re
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.preprocessing import OneHotEncoder 
 from sklearn.decomposition import PCA , TruncatedSVD
-
-
+import joblib
+from sklearn.manifold import TSNE
+# import seaborn as sns
 
 class preprocessor() :
 	"""class to read the dataset and clean it for for furthur processsing
 	"""
-	def __init__(self , DATASET_PATH = '../data/dataset_') :
+	def __init__(self , DATASET_PATH = '../data/dataset_' , from_file = True) :
 		"""constructor for the preprocessord class. It specifies the path to dataset
 
 		Parameters
@@ -20,7 +21,8 @@ class preprocessor() :
 		"""
 		# If you want to use the single file i.e.DATASET_PATH = 'data/training.1600000.processed.noemoticon.csv'
 		# then self.df = self.read_dataset(DATASET_PATH, join_flag = False)
-		self.df = self.read_dataset(DATASET_PATH)			# setter for the dataset
+		if(from_file == False) :
+			self.df = self.read_dataset(DATASET_PATH)			# setter for the dataset
 
 	def read_dataset(self , DATASET_PATH , join_flag = True , ext = '.csv') :
 		"""function to extract the dataset (dataframe) from the specified file path
@@ -115,8 +117,13 @@ class preprocessor() :
 		
 		return text
 
-	def preprocess(self) :
+	def preprocess(self , FILE_PATH = '../data/preprocessed') :
 		"""function to preprocess the dataframe and return dependent (X) and independent (y)
+
+		Parameters
+		----------
+		FILE_PATH : string
+			path to the pickle file
 
 		Returns
 		-------
@@ -125,32 +132,76 @@ class preprocessor() :
 		y : numpy 1D array
 			it is the array of labels
 		"""
+		try :
+			X , y = joblib.load(FILE_PATH)
+			print('Extracted from stored file')
+		except :
+			print('Preprocessing data')
+			day = self.df.date.apply(lambda x : self.__get_day(x))
+			self.df['date'] = pd.to_datetime(self.df['date'])
+			date = self.df.date.apply(lambda x : x.day)
+			month = self.df.date.apply(lambda x : x.month)
+			year = self.df.date.apply(lambda x : x.year)
+			time_in_minutes = self.df.date.apply(lambda x : x.minute + x.hour * 60)
 
-		day = self.df.date.apply(lambda x : self.__get_day(x))
-		self.df['date'] = pd.to_datetime(self.df['date'])
-		date = self.df.date.apply(lambda x : x.day)
-		month = self.df.date.apply(lambda x : x.month)
-		year = self.df.date.apply(lambda x : x.year)
-		time_in_minutes = self.df.date.apply(lambda x : x.minute + x.hour * 60)
+			usr = self.get_user_resolved()
 
-		usr = self.get_user_resolved()
+			self.df['Tidy_Tweets'] = np.vectorize(self.remove_pattern)(self.df['text'], "@[\w]*")
+			self.df['Tidy_Tweets'] = self.df['Tidy_Tweets'].str.replace("[^a-zA-Z#]", " ")
+			self.df['Tidy_Tweets'] = self.df['Tidy_Tweets'].apply(lambda x: ' '.join([w for w in x.split() if len(w)>3]))
+			# Bag of Words
+			bow_vectorizer = CountVectorizer(max_df=0.90, min_df=2, max_features=1000, stop_words='english')
+			# bag-of-words feature matrix
+			bow = bow_vectorizer.fit_transform(self.df['Tidy_Tweets'])
+			# df_bow = pd.DataFrame(bow.todense())
+			# train_bow = bow
+			tsvd = TruncatedSVD(n_components=200)
+			tweets_resolved = tsvd.fit_transform(bow)
+			usr = np.append(usr , tweets_resolved , axis=1)
 
-		self.df['Tidy_Tweets'] = np.vectorize(self.remove_pattern)(self.df['text'], "@[\w]*")
-		self.df['Tidy_Tweets'] = self.df['Tidy_Tweets'].str.replace("[^a-zA-Z#]", " ")
-		self.df['Tidy_Tweets'] = self.df['Tidy_Tweets'].apply(lambda x: ' '.join([w for w in x.split() if len(w)>3]))
-		# Bag of Words
-		bow_vectorizer = CountVectorizer(max_df=0.90, min_df=2, max_features=1000, stop_words='english')
-		# bag-of-words feature matrix
-		bow = bow_vectorizer.fit_transform(self.df['Tidy_Tweets'])
-		# df_bow = pd.DataFrame(bow.todense())
-		# train_bow = bow
-		tsvd = TruncatedSVD(n_components=200)
-		tweets_resolved = tsvd.fit_transform(bow)
-		usr = np.append(usr , tweets_resolved , axis=1)
+			X = pd.concat ([ day , date , month , year , time_in_minutes ] , axis = 1).to_numpy()
+			X = np.append(X,usr , axis=1)
+			# X = 1
+			y = self.df['target'].to_numpy()
 
-		X = pd.concat ([ day , date , month , year , time_in_minutes ] , axis = 1).to_numpy()
-		X = np.append(X,usr , axis=1)
-		# X = 1
-		y = self.df['target'].to_numpy()
+			joblib.dump((X,y) , FILE_PATH)
 
 		return X , y
+
+
+class EDA() :
+	"""class to perform the exploratory data analysis on the data
+	"""
+	def scatter_plot(self, X, y):
+		"""function to apply tsne on the data to get reduce it to 2 dimension, and plot the resulted dimensions 
+
+		Parameters
+		----------
+		X : Pandas dataframe
+			Dataframe of the preprocessed feature X
+		y : Pandas dataframe
+			Dataframe of the label for every corresponding datapoint in X
+		"""
+		print('starting TSNE')
+		NNfeatures = TSNE(n_components = 2).fit_transform(X)
+		print('Ending TSNE')
+		self.__plot_cluster(NNfeatures , y , 'Scatter plot')
+
+	def __plot_cluster(self, X , y , title) :
+		"""function to plot the cluster with diffren colors associated with labels
+
+		Args:
+			X (numpy 2D array): It is the set of independent variable
+			y (numpy 1D aray): It is the dependent vaibale respective to X
+		"""
+		D1 = X[:,0]								# extracting the dimension one
+		D2 = X[:,1]								# extracting the dimension two
+		# print(D1.shape , D2.shape, y.shape)
+		plt.figure()
+		plt.xlabel('D0')
+		plt.ylabel('D1')
+		a = plt.scatter(D1 , D2 , c = y)			# ploting the scatter plot
+		plt.legend(*a.legend_elements(),loc = 'best')
+		plt.title(title)
+		plt.show()													# showing the plot
+		# plt.savefig('plot_images/'+title+'.png')
