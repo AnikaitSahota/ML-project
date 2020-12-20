@@ -9,10 +9,14 @@ Expressing sentiments on social media has become an important way for people to 
 # Credits to dataset
 The dataset titled "Sentiment140 dataset with 1.6 million tweets" on Kaggle has about 1.6 million tweets which have been extracted using the twitter API. The tweets have been annotated with a positive and negative label that can be used to detect sentiment. You can find dataset [here](https://www.kaggle.com/kazanova/sentiment140). Achnoledgement to stanford to conduct such research ([reserch paper](https://www-cs.stanford.edu/people/alecmgo/papers/TwitterDistantSupervision09.pdf)) and making dataset public.
 
-# How to Start
-For testing the best model use runner.py
+# Demo-Preview
+[src directory](https://github.com/AnikaitSahota/ML-project/tree/main/src) contains all the code used in the project. [preprocessing.py](https://github.com/AnikaitSahota/ML-project/tree/main/src/preprocessing.py) is used for all kind of preprocessing over the provided dataset. 
+For testing the best model use [runner.py](https://github.com/AnikaitSahota/ML-project/tree/main/src/runner.py). It uses all the all other file present in src to show the perforamance of the best model and its metrics.
 
-<!-- ![Random GIF](https://media.giphy.com/media/xUNen15tsNHWnIvY4M/giphy.gif) -->
+![Random GIF](https://media.giphy.com/media/xUNen15tsNHWnIvY4M/giphy.gif)
+
+    cd src
+    python runner.py
 
 
 # Table of contents
@@ -27,9 +31,7 @@ Here is a sample TOC(*wow! such cool!*) that is actually the TOC for this README
 - [Installation](#installation)
 - [Usage](#usage)
 - [Development](#development)
-- [Contribute](#contribute)
-    - [Sponsor](#sponsor)
-    - [Adding new features or fixing bugs](#adding-new-features-or-fixing-bugs)
+- [Authors](#authors)
 - [License](#license)
 - [Footer](#footer)
 
@@ -38,8 +40,7 @@ Here is a sample TOC(*wow! such cool!*) that is actually the TOC for this README
 To use this project, first clone this git repository using following commands
 
     git init
-
-```git clone https://github.com/AnikaitSahota/ML-project.git```
+    git clone https://github.com/AnikaitSahota/ML-project.git
 
 Then comes the, installation of dependences
 
@@ -53,8 +54,27 @@ I have use following dependences
 - joblib
 - re
 
-for installing all the dependencies, use
+for installing all the dependencies, use requirement file with following command
 
     pip3 install -r requirment.txt
 <!-- # TODO : need to define requiremtn.txt -->
+# Usage
+
+There are various models implemented in the [modeling.py](https://github.com/AnikaitSahota/ML-project/tree/main/src/modeling.py) file. You can use any of the defined model from its pickle file (stored at [src/models](https://github.com/AnikaitSahota/ML-project/tree/main/src/models)) for retriving the results.
+
+# Authors
+
+- [AnikaitSahota](https://github.com/AnikaitSahota)
+
+- [Kartikeya Gupta](https://github.com/Kartikeya18153)
+
+See also the list of [contributors](https://github.com/AnikaitSahota/ML-project/contributors) who participated in this project.
+
+# License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+# Footer
+- If you want to contribute, fork the repository for yourself. Check out [Fork list](https://github.com/AnikaitSahota/ML-project/network/members)
+- If you liked the project, leave a star. Check out [stargazers](https://github.com/AnikaitSahota/ML-project/stargazers)
 
