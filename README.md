@@ -15,6 +15,8 @@ For testing the best model use [runner.py](https://github.com/AnikaitSahota/ML-p
 
 ![Random GIF](https://media.giphy.com/media/xUNen15tsNHWnIvY4M/giphy.gif)
 
+Use this bellow commands to start executing models
+
     cd src
     python runner.py
 
@@ -27,7 +29,6 @@ For testing the best model use [runner.py](https://github.com/AnikaitSahota/ML-p
 - [Table of contents](#table-of-contents)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Development](#development)
 - [Authors](#authors)
 - [License](#license)
 - [Footer](#footer)

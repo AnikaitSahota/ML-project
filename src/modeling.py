@@ -47,7 +47,7 @@ class tree_classifiers():
             print(classification_report(self.y_test , y_pred))                          # report metric of model over test dataset
 
 
-class logitic_classifier():
+class logistic_classifier():
     """class to classifiy the data using logistic classifier
     """
     def __init__(self , X, y) :

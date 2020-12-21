@@ -6,5 +6,6 @@ if __name__ == "__main__":
     X , y = pre_proc.preprocess()
 
     # preprocess.EDA().scatter_plot(X , y)
-    modeling.tmp(X,y).test(False)
+    modeling.tree_classifiers(X,y).test()
+    modeling.logistic_classifier(X,y).test()
     # print(pre_proc)
